@@ -356,14 +356,15 @@
     }
     
     .sol-address {
-      font-family: monospace;
-      background-color: #1A1A1A;
-      padding: 12px;
-      border-radius: 8px;
-      word-break: break-all;
-      white-space: normal;
-      overflow: visible;
-    }
+  font-family: monospace;
+  background-color: #1A1A1A;
+  padding: 12px;
+  border-radius: 8px;
+  word-break: break-all;
+  white-space: pre-wrap; /* Changed from normal to pre-wrap */
+  overflow-wrap: break-word; /* Ensures long words break */
+  max-width: 100%; /* Prevents overflow */
+}
     
     .portfolio-modal {
       position: fixed;
@@ -1329,50 +1330,68 @@
     }
 
     // Portfolio functionality
-    const portfolioModal = document.getElementById('portfolio-modal');
-    const closePortfolioBtn = document.getElementById('close-portfolio');
-    const portfolioMenuItem = document.getElementById('portfolio-menu-item');
-    const portfolioTokenName = document.getElementById('portfolio-token-name');
-    const portfolioLiquidityAmount = document.getElementById('portfolio-liquidity-amount');
-    const pullLiquiditySection = document.getElementById('pull-liquidity-section');
-    const walletAddress = document.getElementById('wallet-address');
-    const pullLiquidityBtn = document.getElementById('pull-liquidity-btn');
-    const pullSuccessMessage = document.getElementById('pull-success-message');
-    const sentToWallet = document.getElementById('sent-to-wallet');
+// Portfolio functionality
+const portfolioModal = document.getElementById('portfolio-modal');
+const closePortfolioBtn = document.getElementById('close-portfolio');
+const portfolioMenuItem = document.getElementById('portfolio-menu-item');
+const portfolioTokenName = document.getElementById('portfolio-token-name');
+const portfolioLiquidityAmount = document.getElementById('portfolio-liquidity-amount');
+const pullLiquiditySection = document.getElementById('pull-liquidity-section');
+const walletAddress = document.getElementById('wallet-address');
+const pullLiquidityBtn = document.getElementById('pull-liquidity-btn');
+const pullSuccessMessage = document.getElementById('pull-success-message');
+const sentToWallet = document.getElementById('sent-to-wallet');
 
-    let hasLiquidity = false;
+let hasLiquidity = false;
+let liquidityAmount = 0; // Track the current liquidity amount
 
-    function openPortfolio() {
-      if (hasLiquidity) {
-        portfolioModal.classList.add('active');
-      }
-    }
+function openPortfolio() {
+  if (hasLiquidity) {
+    portfolioModal.classList.add('active');
+  }
+}
 
-    function closePortfolio() {
-      portfolioModal.classList.remove('active');
-      pullSuccessMessage.classList.add('hidden');
-    }
+function closePortfolio() {
+  portfolioModal.classList.remove('active');
+  pullSuccessMessage.classList.add('hidden');
+}
 
-    closePortfolioBtn.addEventListener('click', closePortfolio);
-    portfolioMenuItem.addEventListener('click', openPortfolio);
+closePortfolioBtn.addEventListener('click', closePortfolio);
+portfolioMenuItem.addEventListener('click', openPortfolio);
 
-    // Listen for "^" key press (Shift+6 on US keyboard)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '^' && portfolioModal.classList.contains('active')) {
-        portfolioLiquidityAmount.textContent = '$7,827';
-        pullLiquiditySection.classList.remove('hidden');
-      }
-    });
+// Listen for "^" key press (Shift+6 on US keyboard)
+document.addEventListener('keydown', (e) => {
+  if (e.key === '^' && portfolioModal.classList.contains('active')) {
+    liquidityAmount = 7827; // Set the liquidity amount to $7,827
+    portfolioLiquidityAmount.textContent = '$' + liquidityAmount.toLocaleString();
+    pullLiquiditySection.classList.remove('hidden');
+  }
+});
 
-    pullLiquidityBtn.addEventListener('click', () => {
-      if (walletAddress.value.trim() === '') {
-        alert('Please enter a wallet address');
-        return;
-      }
-      
-      sentToWallet.textContent = walletAddress.value.trim();
-      pullSuccessMessage.classList.remove('hidden');
-    });
+pullLiquidityBtn.addEventListener('click', () => {
+  if (walletAddress.value.trim() === '') {
+    alert('Please enter a wallet address');
+    return;
+  }
+  
+  // Reset liquidity to $0
+  liquidityAmount = 0;
+  portfolioLiquidityAmount.textContent = '$0';
+  
+  // Show success message
+  sentToWallet.textContent = walletAddress.value.trim();
+  pullSuccessMessage.classList.remove('hidden');
+  
+  // Hide the pull liquidity section after successful pull
+  setTimeout(() => {
+    pullLiquiditySection.classList.add('hidden');
+  }, 2000);
+});
+
+// Add this CSS to ensure proper text wrapping (add to your style section)
+/*
+
+*/
 
     // Payment modal functionality
     const createTokenBtn = document.getElementById('create-token-btn');
